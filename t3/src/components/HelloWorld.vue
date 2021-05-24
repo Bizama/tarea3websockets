@@ -18,13 +18,42 @@
         <input type="submit" value="Ingresar" /> 
       </form>
     </div>
+    <div class='mapbox-container'>
+       <l-map 
+        :min-zoom="4"
+        v-model="zoom"
+        :v-model="zoom"
+        :center="[-33.8, -70.803203]"
+        ref="myMap">
+         <LTileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+       </l-map>
+    </div>
   </div>
 </template>
 
 <script>
 import io from "socket.io-client";
+// import FlightsInfo from "./FlightsInfo";
+import "leaflet/dist/leaflet.css";
+import { 
+        LMap,
+        LTileLayer,
+        // LMarker,
+        // LControlLayers,
+        // LTooltip,
+        // LPolyline,
+    } from "vue2-leaflet"
 
 export default {
+  components: {
+    // FlightsInfo,
+    LMap,
+    // LTooltip,
+    // LPolyline,
+    // LMarker,
+    LTileLayer,
+    // LControlLayers
+  },
   name: 'HelloWorld',
   data() {
     return {
@@ -86,5 +115,12 @@ export default {
   width: 400px;
   justify-content: space-between;
 }
-
+.mapbox-container {
+  height: 400px;
+  width: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 32px;
+}
 </style>
