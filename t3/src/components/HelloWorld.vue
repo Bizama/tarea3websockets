@@ -108,6 +108,7 @@ export default {
   created() {
     this.socket = io("wss://tarea-3-websocket.2021-1.tallerdeintegracion.cl", {path: '/flights'});
     this.socket.emit('FLIGHTS');
+    this.socket.emit('CHAT', {name: 'Piloto', message: 'Bienvenido'});
     this.socket.once('FLIGHTS', data => {
       this.flights.push(data);
       this.planes = this.flights[0].map((f) => {
