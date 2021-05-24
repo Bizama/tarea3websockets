@@ -30,8 +30,23 @@
             v-for="(airport, index) in airports"
             :key="`ai-${index}`"
             :lat-lng="airport"
-            :radious=10
           ></l-circle>  
+         <l-circle-marker
+          v-for="(plane, index) in planes"
+          :key="`pls-${index}`"
+          :lat-lng="plane.position"
+          :radius=9
+         >
+          <l-tooltip :options="{ permanent: false, interactive: true }">
+            {{ plane.code }}
+          </l-tooltip>
+         </l-circle-marker>
+         <LPolyline 
+          v-for="(poly, index) in theoricalPath"
+          :key="`p-${index}`"
+          :lat-lngs="poly.latlngs"
+          :color="poly.color"
+         />
        </l-map>
     </div>
     <div style="margin-top:32px">
@@ -52,19 +67,19 @@ import "leaflet/dist/leaflet.css";
 import { 
         LMap,
         LTileLayer,
-        LCircle,
+        LCircleMarker,
         // LControlLayers,
-        // LTooltip,
-        // LPolyline,
+        LTooltip,
+        LPolyline,
     } from "vue2-leaflet"
 
 export default {
   components: {
     FlightsInfo,
     LMap,
-    // LTooltip,
-    // LPolyline,
-    LCircle,
+    LTooltip,
+    LPolyline,
+    LCircleMarker,
     LTileLayer,
     // LControlLayers
   },
@@ -99,7 +114,15 @@ export default {
   },
   mounted() {
     this.socket.on('POSITION', data => {
-      console.log(data);
+      this.planes = this.planes.map((p) => {
+        if (data.code === p.code) {
+          p.position = data.position;
+          if (p.initial_position[0] == 0) {
+            p.initial_position = p.position;
+          }
+        }
+        return p;
+      });
     });
     this.socket.on('CHAT', data => {
       const message_date = new Date(data.date);
