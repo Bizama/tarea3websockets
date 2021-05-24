@@ -26,6 +26,12 @@
         :center="[-33.8, -70.803203]"
         ref="myMap">
          <LTileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+         <l-circle
+            v-for="(airport, index) in airports"
+            :key="`ai-${index}`"
+            :lat-lng="airport"
+            :radious=10
+          ></l-circle>  
        </l-map>
     </div>
     <div style="margin-top:32px">
@@ -46,7 +52,7 @@ import "leaflet/dist/leaflet.css";
 import { 
         LMap,
         LTileLayer,
-        // LMarker,
+        LCircle,
         // LControlLayers,
         // LTooltip,
         // LPolyline,
@@ -58,7 +64,7 @@ export default {
     LMap,
     // LTooltip,
     // LPolyline,
-    // LMarker,
+    LCircle,
     LTileLayer,
     // LControlLayers
   },
@@ -71,6 +77,8 @@ export default {
       nickname: '',
       flights: [],
       planes: [],
+      nickname_aux: '',
+      zoom: 6,
     }
   },
   created() {
@@ -85,8 +93,9 @@ export default {
           initial_position: [...f.origin],
           destination: [...f.destination],
         };
-      })
-    });
+      },
+    );
+  });
   },
   mounted() {
     this.socket.on('POSITION', data => {
@@ -118,7 +127,34 @@ export default {
     getFlights: function() { 
             this.socket.emit('FLIGHTS');
           },
-  }
+  },
+  computed: {
+    airports: function() {
+    return new Set(
+      this.flights[0].map((f) => {
+        const coords = [...f.origin];
+        const coords2 = [...f.destination];
+        return [coords, coords2];
+      }).flat()
+    );
+    },
+    theoricalPath: function() {
+      return this.flights[0].map((f)=> {
+        return {
+          latlngs: [[...f.origin], [...f.destination]],
+          color: '#14B8A6'
+        };
+      });
+    },
+    actualPath: function() {
+      return this.planes.map((p) => {
+        return {
+          latlngs: [[...p.initial_position], [...p.position]],
+          color: '#b314b8'
+        };
+      });
+    },
+  },  
   
   }
 </script>
