@@ -1,59 +1,62 @@
 <template>
   <div>
     <h1>Websocket Airlines Information</h1>
-    <div> 
-      <ul ref="chatbox" class="chatbox-container" id="chatbox">
-        <li v-for="message in messages" :key="message.name" class="list">
-          {{ message.name }}({{message.date}}): {{ message.message }}
-        </li>
-      </ul>
-      <form @submit.prevent="sendMessage" class="chatbox-bottom" v-if="this.nickname != ''">
-        <input  class="chatbox-input" type="text" placeholder="Message..." v-model="message" />
-        <input type="submit" value="Send" />
-      </form>
-      <form @submit.prevent="changeNickname" v-else>
-        <span>Introduzca un nickname para chatear</span>
-        <br>
-        <input type="text"  class="chatbox-input" placeholder="Escriba su nickname..." v-model="nickname_aux" />
-        <input type="submit" value="Ingresar" /> 
-      </form>
-    </div>
-    <div class='mapbox-container'>
-       <l-map 
-        :min-zoom="4"
-        v-model="zoom"
-        :v-model="zoom"
-        :center="[-33.8, -70.803203]"
-        ref="myMap">
-         <LTileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-         <l-circle
-            v-for="(airport, index) in airports"
-            :key="`ai-${index}`"
-            :lat-lng="airport"
-          ></l-circle>  
-         <l-circle-marker
-          v-for="(plane, index) in planes"
-          :key="`pls-${index}`"
-          :lat-lng="plane.position"
-          :radius=9
-         >
-          <l-tooltip :options="{ permanent: false, interactive: true }">
-            {{ plane.code }}
-          </l-tooltip>
-         </l-circle-marker>
-         <LPolyline 
-          v-for="(poly, index) in theoricalPath"
-          :key="`p-${index}`"
-          :lat-lngs="poly.latlngs"
-          :color="poly.color"
-         />
+    <div class="ambos">
+      <div> 
+        <ul ref="chatbox" class="chatbox-container" id="chatbox">
+          <li v-for="message in messages" :key="message.name" class="list">
+            {{ message.name }}({{message.date}}): {{ message.message }}
+          </li>
+        </ul>
+        <form @submit.prevent="sendMessage" class="chatbox-bottom" v-if="this.nickname != ''">
+          <input  class="chatbox-input" type="text" placeholder="Message..." v-model="message" />
+          <input type="submit" value="Send" />
+        </form>
+        <form @submit.prevent="changeNickname" v-else>
+          <span>Introduzca un nickname para chatear</span>
+          <br>
+          <input type="text"  class="chatbox-input" placeholder="Escriba su nickname..." v-model="nickname_aux" />
+          <input type="submit" value="Ingresar" /> 
+        </form>
+      </div>
+      <div class='mapbox-container'>
+        <l-map 
+          :min-zoom="4"
+          v-model="zoom"
+          :v-model="zoom"
+          :center="[-33.8, -70.803203]"
+          ref="myMap">
+          <LTileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+          <l-circle-marker
+              v-for="(airport, index) in airports"
+              :key="`ai-${index}`"
+              :lat-lng="airport"
+              color="#e80911"
+            ></l-circle-marker>  
+          <l-circle-marker
+            v-for="(plane, index) in planes"
+            :key="`pls-${index}`"
+            :lat-lng="plane.position"
+            :radius=9
+          >
+            <l-tooltip :options="{ permanent: false, interactive: true }">
+              {{ plane.code }}
+            </l-tooltip>
+          </l-circle-marker>
           <LPolyline 
-          v-for="(line, index) in actualPath"
-          :key="`l-${index}`" 
-          :lat-lngs="line.latlngs"
-          :color="line.color"
+            v-for="(poly, index) in theoricalPath"
+            :key="`p-${index}`"
+            :lat-lngs="poly.latlngs"
+            :color="poly.color"
           />
-       </l-map>
+            <LPolyline 
+            v-for="(line, index) in actualPath"
+            :key="`l-${index}`" 
+            :lat-lngs="line.latlngs"
+            :color="line.color"
+            />
+        </l-map>
+      </div>
     </div>
     <div style="margin-top:32px">
       <button @click="getFlights">Obtener informacion de vuelos</button>
@@ -190,13 +193,15 @@ export default {
 
 <style>
 .chatbox-container{
-    height: 50px;
+    margin-top: 50px;
+    height: 400px;
     width: 400px;
     overflow-y: scroll;
   }
 
 .chatbox-input {
   margin-left:16px;
+  width: 320px;
 }
 
 .chatbox-bottom {
@@ -204,7 +209,7 @@ export default {
   justify-content: space-between;
 }
 .mapbox-container {
-  height: 400px;
+  height: 450px;
   width: 100vh;
   display: flex;
   justify-content: center;
@@ -221,5 +226,9 @@ export default {
   margin-right: 16px;
   list-style: none;
   margin-top: 32px;
+}
+.ambos {
+  display: flex;
+  flex-direction: row;
 }
 </style>
