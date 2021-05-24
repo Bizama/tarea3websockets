@@ -47,6 +47,12 @@
           :lat-lngs="poly.latlngs"
           :color="poly.color"
          />
+          <LPolyline 
+          v-for="(line, index) in actualPath"
+          :key="`l-${index}`" 
+          :lat-lngs="line.latlngs"
+          :color="line.color"
+          />
        </l-map>
     </div>
     <div style="margin-top:32px">
@@ -105,7 +111,7 @@ export default {
         return {
           code: f.code,
           position: [...f.origin],
-          initial_position: [...f.origin],
+          initial_position: [0,0],
           destination: [...f.destination],
         };
       },
