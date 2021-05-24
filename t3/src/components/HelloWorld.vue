@@ -28,12 +28,20 @@
          <LTileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
        </l-map>
     </div>
+    <div style="margin-top:32px">
+      <button @click="getFlights">Obtener informacion de vuelos</button>
+      <div class="flights-info"> 
+        <li v-for="flight in flights[0]" :key="flight.code">
+          <flights-info v-bind:flight_list="flight" />
+        </li>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import io from "socket.io-client";
-// import FlightsInfo from "./FlightsInfo";
+import FlightsInfo from "./FlightsInfo";
 import "leaflet/dist/leaflet.css";
 import { 
         LMap,
@@ -46,7 +54,7 @@ import {
 
 export default {
   components: {
-    // FlightsInfo,
+    FlightsInfo,
     LMap,
     // LTooltip,
     // LPolyline,
@@ -67,6 +75,18 @@ export default {
   },
   created() {
     this.socket = io("wss://tarea-3-websocket.2021-1.tallerdeintegracion.cl", {path: '/flights'});
+    this.socket.emit('FLIGHTS');
+    this.socket.once('FLIGHTS', data => {
+      this.flights.push(data);
+      this.planes = this.flights[0].map((f) => {
+        return {
+          code: f.code,
+          position: [...f.origin],
+          initial_position: [...f.origin],
+          destination: [...f.destination],
+        };
+      })
+    });
   },
   mounted() {
     this.socket.on('POSITION', data => {
@@ -95,6 +115,9 @@ export default {
     changeNickname: function() {
       this.nickname = this.nickname_aux 
     },
+    getFlights: function() { 
+            this.socket.emit('FLIGHTS');
+          },
   }
   
   }
@@ -121,6 +144,17 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-top: 32px;
+}
+.flights-info {
+  height: 200px;
+  width: 100%;
+  padding-right: 50px;
+  padding-left: 50px;
+  display: flex;
+  flex-direction: row;
+  margin-right: 16px;
+  list-style: none;
   margin-top: 32px;
 }
 </style>
